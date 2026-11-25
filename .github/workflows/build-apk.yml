@@ -1,0 +1,50 @@
+name: Build Awaaz APK
+
+on:
+  push:
+    branches: [main, master]
+  workflow_dispatch:
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Code bundle kholo
+        run: |
+          base64 -d app-bundle.b64 | tar xJ --strip-components=1
+          ls -la
+
+      - uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: '17'
+
+      - uses: subosito/flutter-action@v2
+        with:
+          channel: stable
+          cache: true
+
+      - name: Android files banao
+        run: flutter create --platforms=android --project-name awaaz --org com.polarisgrids .
+
+      - name: Permissions jodo
+        run: python3 tools/setup_android.py
+
+      - name: Packages lao
+        run: flutter pub get
+
+      - name: Code check
+        run: flutter analyze --no-fatal-infos --no-fatal-warnings lib
+
+      - name: APK build karo
+        run: flutter build apk --release
+
+      - name: APK ka naam badlo
+        run: cp build/app/outputs/flutter-apk/app-release.apk Awaaz.apk
+
+      - uses: actions/upload-artifact@v4
+        with:
+          name: Awaaz-APK
+          path: Awaaz.apk
