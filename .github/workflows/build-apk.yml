@@ -5,6 +5,9 @@ on:
     branches: [main, master]
   workflow_dispatch:
 
+permissions:
+  contents: write
+
 jobs:
   build:
     runs-on: ubuntu-latest
@@ -48,3 +51,12 @@ jobs:
         with:
           name: Awaaz-APK
           path: Awaaz.apk
+
+      - name: Download link (Release) banao
+        uses: softprops/action-gh-release@v2
+        with:
+          tag_name: v1.0.${{ github.run_number }}
+          name: Awaaz v1.0.${{ github.run_number }}
+          body: Awaaz app - Text aur Script se insaan jaisi awaaz. Awaaz.apk download karke phone mein install karo.
+          files: Awaaz.apk
+          make_latest: true
